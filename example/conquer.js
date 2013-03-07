@@ -8,7 +8,7 @@ var waitress   = require('waitress')
   ;
 
 queue.monitorJobQueue('divide-and-conquer', function(batch, cb) {
-  everything.conquer(
+  daq.conquer(
     {
       batch: batch,
       model: Model

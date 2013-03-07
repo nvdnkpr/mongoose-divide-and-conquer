@@ -7,7 +7,7 @@ var waitress   = require('waitress')
   , queue      = new PikaQueue()
   ;
 
-everything.divide({
+daq.divide({
   model: Model,
   batchSize: 1000
 }, function(err, batches) {
