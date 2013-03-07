@@ -2,14 +2,10 @@
 
 var waitress   = require('waitress')
   , PikaQueue  = require('pika-queue')
-  , everything = require('./index')
-  , repo       = 'log-workout'
-  , model      = 'WorkoutLog'
-  , models     = require('../' + repo + '/models')
-  , Model      = models[model]
+  , daq        = require('mongoose-divide-and-conquer')
+  , Model      = require('./some/model')
   , queue      = new PikaQueue()
   ;
-
 
 everything.divide({
   model: Model,
@@ -25,7 +21,7 @@ everything.divide({
 
   console.log('queueing %d batches', batches.length);
   batches.forEach(function(batch, i) {
-    queue.queueJob('user-everything', batch, function(err) {
+    queue.queueJob('divide-and-conquer', batch, function(err) {
       console.log('batch %s finished', i);
       done(err);
     });

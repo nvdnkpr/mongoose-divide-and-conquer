@@ -1,18 +1,13 @@
 "use strict";
 
-var stewardess = require('stewardess')
-  , waitress   = require('waitress')
+var waitress   = require('waitress')
   , PikaQueue  = require('pika-queue')
-  , everything = require('./index')
-  , repo       = 'log-workout'
-  , model      = 'WorkoutLog'
-  , models     = require('../' + repo + '/models')
-  , Model      = models[model]
+  , daq        = require('mongoose-divide-and-conquer')
+  , Model      = require('./some/model')
   , queue      = new PikaQueue()
   ;
 
-
-queue.monitorJobQueue('user-everything', function(batch, cb) {
+queue.monitorJobQueue('divide-and-conquer', function(batch, cb) {
   everything.conquer(
     {
       batch: batch,
