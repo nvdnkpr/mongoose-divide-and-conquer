@@ -18,7 +18,7 @@ var waitress   = require('waitress')
   , queue      = new PikaQueue()
   ;
 
-everything.divide({
+daq.divide({
   model: Model,
   batchSize: 1000
 }, function(err, batches) {
@@ -58,7 +58,7 @@ var waitress   = require('waitress')
   ;
 
 queue.monitorJobQueue('divide-and-conquer', function(batch, cb) {
-  everything.conquer(
+  daq.conquer(
     {
       batch: batch,
       model: Model

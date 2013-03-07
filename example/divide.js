@@ -2,16 +2,16 @@
 
 var waitress   = require('waitress')
   , PikaQueue  = require('pika-queue')
-  , everything = require('./index')
+  , daq        = require('../index')
   , repo       = 'log-workout'
   , model      = 'WorkoutLog'
-  , models     = require('../' + repo + '/models')
+  , models     = require('../../' + repo + '/models')
   , Model      = models[model]
   , queue      = new PikaQueue()
   ;
 
 
-everything.divide({
+daq.divide({
   model: Model,
   batchSize: 1000
 }, function(err, batches) {

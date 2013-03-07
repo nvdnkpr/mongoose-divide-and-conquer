@@ -3,17 +3,17 @@
 var stewardess = require('stewardess')
   , waitress   = require('waitress')
   , PikaQueue  = require('pika-queue')
-  , everything = require('./index')
+  , daq        = require('../index')
   , repo       = 'log-workout'
   , model      = 'WorkoutLog'
-  , models     = require('../' + repo + '/models')
+  , models     = require('../../' + repo + '/models')
   , Model      = models[model]
   , queue      = new PikaQueue()
   ;
 
 
 queue.monitorJobQueue('user-everything', function(batch, cb) {
-  everything.conquer(
+  daq.conquer(
     {
       batch: batch,
       model: Model
