@@ -2,6 +2,7 @@
 
 var stewardess  = require('stewardess')
   , waitress    = require('waitress')
+  , Spigot      = require('spigot')
   , PikaQueue   = require('pika-queue')
   , progressBar = require('progress-bar')
   ;
@@ -51,24 +52,14 @@ function divide(options, cb) {
     },
 
     function getIdsAtIntervals(options, next) {
-      var done = waitress(options.batchCount + 1, function(err, ids) {
-        ids.sort();
-        options.idList = [];
-        for (var i = 0; i < ids.length - 1; ++i) {
-          options.idList.push({
-            start: ids[i],
-            end: ids[i + 1]
-          });
-        }
-        // add one to the last end
-        options.idList[options.idList.length -1].end = hexAddOne(options.idList[options.idList.length -1].end);
-        next();
-      });
+      var count = 0
+        , bar   = progressBar.create(process.stdout, 20)
+        , ids   = []
+        ;
 
-      var count = 0;
-      var bar = progressBar.create(process.stdout, 20);
       bar.update(0);
-      for (var i = 0; i < options.batchCount + 1; ++i) {
+
+      var spigot = new Spigot(options.idFindConcurrency || 50, function(i, done) {
         options.model
           .find()
           .select('_id')
@@ -76,14 +67,34 @@ function divide(options, cb) {
           .sort('_id')
           .limit(1)
           .exec(function(err, docs) {
-            if (err) return cb(err);
-            if (!docs.length) return cb();
+            if (err) return done(err);
+            if (!docs.length) return done();
             bar.update(count / options.batchCount);
             count += 1;
-            done(err, docs[0]._id.toString());
+            ids.push(docs[0]._id.toString());
+            done();
           });
+      });
+
+      spigot.on('empty', function(err) {
+        options.idList = ids.sort().map(function(id, i) {
+          return {
+            start: id,
+            end: ids[Math.min(i + 1, ids.length - 1)]
+          }
+        });
+        // add one to the last end
+        options.idList[options.idList.length -1].end = hexAddAtLeastOne(options.idList[options.idList.length -1].end);
+        next();
+      });
+
+      spigot.on('error', next);
+
+      for (var i = 0; i < options.batchCount + 1; ++i) {
+        spigot.queue(i);
       }
     }
+
   )
   .plugin(stewardess.plugins.timer)
   .error(cb)
@@ -93,7 +104,7 @@ function divide(options, cb) {
   .run(options)
 }
 
-function hexAddOne(hex) {
+function hexAddAtLeastOne(hex) {
   // we add at least one.
   hex = hex.split('');
   for (var i = hex.length - 1; i > 0; --i) {

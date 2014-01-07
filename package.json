@@ -1,12 +1,13 @@
 {
   "name": "mongoose-divide-and-conquer",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "divide and conquer mongoose collections",
   "main": "index.js",
   "repository": "git@github.com:ifit/mongoose-divide-and-conquer",
   "author": "Adam Blackburn",
   "license": "MIT",
   "dependencies": {
+    "spigot": "0.0.3",
     "stewardess": "~0.1.0",
     "progress-bar": "~0.1.1",
     "waitress": "~0.1.4"
